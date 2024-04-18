@@ -1,6 +1,8 @@
 package admin
 
 import (
+	"embed"
+	"net/http"
 	"net/url"
 	"sync/atomic"
 
@@ -17,13 +19,25 @@ import (
 	"github.com/kataras/iris/v12/context"
 )
 
+// 支持 go1.16+ embed 静态文件打包
+
+//go:embed assets/*
+var assets embed.FS
+
+func Assets() embed.FS {
+	return assets
+}
+
 func newApp(adm *Admin) *iris.Application {
 
 	app := iris.New()
 	app.UseGlobal(newRecover(adm))
 	app.Logger().SetLevel(adm.getOpts().App.LogLevel)
 	app.Use(logger.New())
-	app.HandleDir("/", AssetFile(), iris.DirOptions{
+	//app.HandleDir("/", AssetFile(), iris.DirOptions{
+	fsys := iris.PrefixDir("assets", http.FS(Assets()))
+	//app.RegisterView(iris.HTML(fsys, ".html"))
+	app.HandleDir("/", fsys, iris.DirOptions{
 		IndexName: "index.html",
 		Cache: iris.DirCacheOptions{
 			Enable:          true,
