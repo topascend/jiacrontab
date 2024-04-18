@@ -14,7 +14,7 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string `json:"username" gorm:"not null;uniqueIndex;size:500"`
+	Username string `json:"username" gorm:"not null;uniqueIndex;size:200"`
 	Passwd   string `json:"-"`
 	Salt     string `json:"-"`
 	Avatar   string `json:"avatar"`
