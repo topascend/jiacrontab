@@ -22,7 +22,7 @@ $env:GOARCH="amd64"
 $env:CGO_ENABLED="1"
 
  go build  -o ./bin/jiacrontab_admin -a ./app/jiacrontab_admin/main.go
- go build  -o ./bin/jiacrontabd ./app/jiacrontabd/main.go
+ env CGO_ENABLED=1 go build  -o ./bin/jiacrontabd ./app/jiacrontabd/main.go
 ```
 ```
 
