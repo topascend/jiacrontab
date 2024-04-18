@@ -55,7 +55,7 @@ jiacrontabd：负责job数据存储，任务调度
 
 #### 二进制安装
 
-1.[下载](https://download.iwannay.cn/jiacrontab/) 二进制文件。
+1.[下载]() 二进制文件。
 
 2.解压缩进入目录(jiarontab_admin,jiacrontabd)。
 
