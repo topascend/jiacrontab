@@ -34,8 +34,8 @@ type CrontabJob struct {
 	Code                string      `json:"code" gorm:"type:TEXT"`
 	DependJobs          DependJobs  `json:"dependJobs" gorm:"type:TEXT"`
 	LastCostTime        float64     `json:"lastCostTime"`
-	LastExecTime        *time.Time  `json:"lastExecTime"`
-	NextExecTime        *time.Time  `json:"nextExecTime"`
+	LastExecTime        time.Time   `json:"lastExecTime"`
+	NextExecTime        time.Time   `json:"nextExecTime"`
 	Failed              bool        `json:"failed"`
 	LastExitStatus      string      `json:"lastExitStatus" grom:"index"`
 	CreatedUserID       uint        `json:"createdUserId"`

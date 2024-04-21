@@ -27,7 +27,6 @@ var assets embed.FS
 func Assets() embed.FS {
 	return assets
 }
-
 func newApp(adm *Admin) *iris.Application {
 
 	app := iris.New()

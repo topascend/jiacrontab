@@ -126,8 +126,7 @@ func (j *CrontabJob) Edit(args proto.EditCrontabJobArgs, reply *models.CrontabJo
 		} else {
 			model = model.Where("id=? and created_user_id=? and group_id=?", args.Job.ID, args.Job.CreatedUserID, args.Job.GroupID)
 		}
-
-		//args.Job.NextExecTime = time.Time{}
+		args.Job.NextExecTime = time.Time{}
 		model = model.Omit(
 			"updated_at", "created_at", "deleted_at",
 			"created_user_id", "created_username",
