@@ -296,8 +296,9 @@ func (j *CrontabJob) Exec(args proto.GetJobArgs, reply *proto.ExecCrontabJobRepl
 
 	if err == nil {
 		ins := newJobEntry(&crontab.Job{
-			ID:    reply.Job.ID,
-			Value: reply.Job,
+			ID:     reply.Job.ID,
+			Value:  reply.Job,
+			Market: "手动执行",
 		}, j.jd)
 		ins.setOnce(true)
 		j.jd.addTmpJob(ins)

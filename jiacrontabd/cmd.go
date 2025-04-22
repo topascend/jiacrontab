@@ -38,6 +38,7 @@ type cmdUint struct {
 	startTime        time.Time
 	costTime         time.Duration
 	jd               *Jiacrontabd
+	market           string
 }
 
 func (cu *cmdUint) release() {
@@ -129,6 +130,9 @@ func (cu *cmdUint) writeLog(b []byte) {
 }
 
 func (cu *cmdUint) exec() error {
+	//market := cu.jd.jobs[cu.id].job.Market
+	market := cu.market
+
 	log.Debug("cmd exec args:", cu.args)
 	if len(cu.args) == 0 {
 		return errors.New("invalid args")
@@ -181,6 +185,9 @@ func (cu *cmdUint) exec() error {
 			}
 
 			hasOutput = true // 标记有输出
+			if len(market) > 0 {
+				line = append([]byte("["+market+"]"), line...)
+			}
 			if !bytes.HasSuffix(line, []byte{'\n'}) {
 				line = append(line, '\n')
 			}
@@ -204,6 +211,9 @@ func (cu *cmdUint) exec() error {
 			}
 
 			hasOutput = true // 标记有输出
+			if len(market) > 0 {
+				line = append([]byte("["+market+"]"), line...)
+			}
 			if !bytes.HasSuffix(line, []byte{'\n'}) {
 				line = append(line, '\n')
 			}
@@ -221,7 +231,12 @@ func (cu *cmdUint) exec() error {
 
 		// 如果没有输出，记录执行成功
 		if !hasOutput {
+
 			successMsg := []byte("[系统默认] 命令执行完成，无输出内容\n")
+			if len(market) > 0 {
+				successMsg = append([]byte("["+market+"]"), successMsg...)
+			}
+
 			if cfg.VerboseJobLog {
 				prefix := fmt.Sprintf("[%s %s %s] ", time.Now().Format(proto.DefaultTimeLayout), cfg.BoardcastAddr, cu.label)
 				successMsg = append([]byte(prefix), successMsg...)

@@ -154,6 +154,7 @@ func (p *process) exec() error {
 			label:            p.jobEntry.detail.Name,
 			killChildProcess: p.jobEntry.detail.KillChildProcess,
 			jd:               p.jobEntry.jd,
+			market:           p.jobEntry.job.Market,
 		}
 
 		if p.jobEntry.once {

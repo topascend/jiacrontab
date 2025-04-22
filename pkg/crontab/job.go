@@ -67,6 +67,8 @@ type Job struct {
 	second, minute, hour, dom, month, dow uint64
 
 	Value interface{}
+
+	Market string //备注
 }
 
 func (j *Job) Format() string {
