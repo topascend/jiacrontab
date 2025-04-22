@@ -133,6 +133,7 @@ func (cu *cmdUint) exec() error {
 	if len(cu.args) == 0 {
 		return errors.New("invalid args")
 	}
+
 	cu.args[0] = util.FilterEmptyEle(cu.args[0])
 	cmdName := cu.args[0][0]
 	args := cu.args[0][1:]
@@ -148,15 +149,12 @@ func (cu *cmdUint) exec() error {
 	if err != nil {
 		return err
 	}
-
 	defer stdout.Close()
 
 	stderr, err := cmd.StderrPipe()
-
 	if err != nil {
 		return err
 	}
-
 	defer stderr.Close()
 
 	if err := cmd.Start(); err != nil {
@@ -165,18 +163,26 @@ func (cu *cmdUint) exec() error {
 
 	reader := bufio.NewReader(stdout)
 	readerErr := bufio.NewReader(stderr)
+
+	// 新增：跟踪是否有输出
+	hasOutput := false
+
 	// 如果已经存在日志则直接写入
 	cu.writeLog(cu.content)
+
 	go func() {
-		var (
-			line []byte
-		)
+		var line []byte
 
+		// 处理标准输出
 		for {
-
 			line, _ = reader.ReadBytes('\n')
 			if len(line) == 0 {
 				break
+			}
+
+			hasOutput = true // 标记有输出
+			if !bytes.HasSuffix(line, []byte{'\n'}) {
+				line = append(line, '\n')
 			}
 
 			if cfg.VerboseJobLog {
@@ -190,20 +196,41 @@ func (cu *cmdUint) exec() error {
 			cu.writeLog(line)
 		}
 
+		// 处理标准错误
 		for {
 			line, _ = readerErr.ReadBytes('\n')
 			if len(line) == 0 {
 				break
 			}
-			// 默认给err信息加上日期标志
+
+			hasOutput = true // 标记有输出
+			if !bytes.HasSuffix(line, []byte{'\n'}) {
+				line = append(line, '\n')
+			}
+
 			if cfg.VerboseJobLog {
 				prefix := fmt.Sprintf("[%s %s %s] ", time.Now().Format(proto.DefaultTimeLayout), cfg.BoardcastAddr, cu.label)
 				line = append([]byte(prefix), line...)
 			}
+
 			if cu.exportLog {
 				cu.content = append(cu.content, line...)
 			}
 			cu.writeLog(line)
+		}
+
+		// 如果没有输出，记录执行成功
+		if !hasOutput {
+			successMsg := []byte("[系统默认] 命令执行完成，无输出内容\n")
+			if cfg.VerboseJobLog {
+				prefix := fmt.Sprintf("[%s %s %s] ", time.Now().Format(proto.DefaultTimeLayout), cfg.BoardcastAddr, cu.label)
+				successMsg = append([]byte(prefix), successMsg...)
+			}
+
+			if cu.exportLog {
+				cu.content = append(cu.content, successMsg...)
+			}
+			cu.writeLog(successMsg)
 		}
 	}()
 
